@@ -6,6 +6,7 @@ use GuzzleHttp\Psr7\Response as Psr7Response;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use QuetzalStudio\Flip\Models\AcceptPaymentCreateBill;
+use QuetzalStudio\Flip\Models\AcceptPaymentEditBill;
 use QuetzalStudio\Flip\Models\BankAccountInquiry;
 use QuetzalStudio\Flip\Models\MoneyTransfer;
 use QuetzalStudio\Flip\Models\SpecialMoneyTransfer;
@@ -171,6 +172,24 @@ class Flip
         $resp = static::client()->get(
             static::url('v2.get_bill'). "/$billId/bill",
         );
+
+        return static::handleResponse($resp);
+    }
+
+    public static function editBill(string $billId, AcceptPaymentEditBill $payload)
+    {
+        $resp = static::client()
+            ->withUrlParameters(['bill_id' => $billId])
+            ->put(static::url('v2.edit_bill'), [
+                'title' => $payload->toArray()['title']
+            ]);
+
+        if ($resp->json('code') == Error::VALIDATION_ERROR) {
+            $psr7 = new Psr7Response(422, $resp->headers(), $resp->body());
+            $resp = new Response($psr7);
+
+            throw new RequestException($resp);
+        }
 
         return static::handleResponse($resp);
     }
