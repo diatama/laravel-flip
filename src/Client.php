@@ -73,7 +73,7 @@ class Client
             return $this;
         }
 
-        if (in_array($method, ['get', 'post'])) {
+        if (in_array($method, ['get', 'post', 'put'])) {
             $response = $this->pendingRequest->$method(...$arguments);
 
             RequestLogger::dispatch($response);
