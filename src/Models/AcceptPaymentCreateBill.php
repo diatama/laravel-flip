@@ -62,7 +62,7 @@ class AcceptPaymentCreateBill implements Arrayable
     {
         return [
             "title" => $this->title,
-            "amount" => $this->amount,
+            "amount" => (!$this->amount) ? '' : $this->amount,
             "type" => $this->type,
             "expired_date" => $this->expiredDate,
             "redirect_url" => $this->redirectUrl,
